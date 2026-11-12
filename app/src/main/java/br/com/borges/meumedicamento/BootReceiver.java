@@ -1,4 +1,26 @@
 package br.com.borges.meumedicamento;
-import android.content.*;import android.database.*;
-public class BootReceiver extends BroadcastReceiver{public void onReceive(Context c,Intent i){Db db=new Db(c);try(Cursor q=db.query("SELECT doses.id,doses.due,meds.name,people.name FROM doses JOIN meds ON meds.id=doses.med JOIN people ON people.id=meds.person WHERE doses.status=0 AND doses.due>?",String.valueOf(System.currentTimeMillis()))){while(q.moveToNext())ReminderReceiver.schedule(c,q.getInt(0),q.getLong(1),q.getString(3)+": "+q.getString(2));}}}
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+
+public class BootReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (!Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) return;
+        Db db = new Db(context);
+        try (Cursor cursor = db.query(
+                "SELECT doses.id,doses.due,meds.name,people.name FROM doses " +
+                "JOIN meds ON meds.id=doses.med " +
+                "JOIN people ON people.id=meds.person " +
+                "WHERE doses.status=0 AND doses.due>?",
+                String.valueOf(System.currentTimeMillis()))) {
+            while (cursor.moveToNext()) {
+                ReminderReceiver.schedule(
+                    context, cursor.getInt(0), cursor.getLong(1),
+                    cursor.getString(3) + ": " + cursor.getString(2));
+            }
+        }
+    }
 }
