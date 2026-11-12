@@ -1,0 +1,7 @@
+package br.com.borges.meumedicamento;
+import android.app.*;import android.content.*;import android.os.Build;
+public class ReminderReceiver extends android.content.BroadcastReceiver{
+ static final String CHANNEL="medicamentos";
+ public void onReceive(Context c,Intent i){String name=i.getStringExtra("name");if(name==null)return;NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);nm.createNotificationChannel(new NotificationChannel(CHANNEL,"Horários dos medicamentos",NotificationManager.IMPORTANCE_HIGH));Intent open=new Intent(c,MainActivity.class);PendingIntent pi=PendingIntent.getActivity(c,0,open,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);Notification n=new Notification.Builder(c,CHANNEL).setSmallIcon(android.R.drawable.ic_dialog_info).setContentTitle("Hora do medicamento").setContentText(name).setContentIntent(pi).setAutoCancel(true).build();try{nm.notify(i.getIntExtra("id",0),n);}catch(SecurityException ignored){}}
+ static void schedule(Context c,int id,long when,String name){if(when<=System.currentTimeMillis())return;AlarmManager a=(AlarmManager)c.getSystemService(Context.ALARM_SERVICE);Intent i=new Intent(c,ReminderReceiver.class).putExtra("id",id).putExtra("name",name);PendingIntent p=PendingIntent.getBroadcast(c,id,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);a.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,when,p);}
+}
