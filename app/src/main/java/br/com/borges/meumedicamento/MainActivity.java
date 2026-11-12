@@ -20,7 +20,7 @@ public class MainActivity extends Activity{
   Calendar end=(Calendar)begin.clone();end.add(Calendar.DAY_OF_MONTH,1);
   int total=0,done=0;
   LinearLayout dosesBox=new LinearLayout(this);dosesBox.setOrientation(1);
-  try(Cursor c=db.query("SELECT doses.id,people.name,meds.name,meds.dose,doses.due,doses.status,doses.actual FROM doses JOIN meds ON meds.id=doses.med JOIN people ON people.id=meds.person WHERE doses.due>=? AND doses.due<? ORDER BY doses.due ASC",String.valueOf(begin.getTimeInMillis()),String.valueOf(end.getTimeInMillis())))){
+  try(Cursor c=db.query("SELECT doses.id,people.name,meds.name,meds.dose,doses.due,doses.status,doses.actual FROM doses JOIN meds ON meds.id=doses.med JOIN people ON people.id=meds.person WHERE doses.due>=? AND doses.due<? ORDER BY doses.due ASC",String.valueOf(begin.getTimeInMillis()),String.valueOf(end.getTimeInMillis()))){
    while(c.moveToNext()){
     total++;long id=c.getLong(0),due=c.getLong(4);int status=c.getInt(5);if(status==1)done++;
     LinearLayout card=new LinearLayout(this);card.setOrientation(1);card.setPadding(16,14,16,14);
